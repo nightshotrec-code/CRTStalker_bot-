@@ -1,4 +1,4 @@
-import os, re, json, html, urllib.parse, urllib.request
+import os, re, json, html, urllib.parse, urllib.request, urllib.error
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
@@ -56,8 +56,12 @@ def send(msg):
         "disable_web_page_preview": "false",
     }).encode()
     req = urllib.request.Request(url, data=payload, method="POST")
-    with urllib.request.urlopen(req, timeout=20) as r:
-        r.read()
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r:
+            r.read()
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"Telegram API error {e.code}: {body}") from e
 
 if EVENT_NAME == "workflow_dispatch":
     send("✅ CRTStalker conectado y funcionando. A partir de ahora buscaré anuncios nuevos automáticamente.")
