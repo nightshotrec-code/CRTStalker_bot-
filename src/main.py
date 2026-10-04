@@ -63,7 +63,33 @@ def send(msg):
         body = e.read().decode("utf-8", errors="replace")
         raise RuntimeError(f"Telegram API error {e.code}: {body}") from e
 
-if EVENT_NAME in {"workflow_dispatch", "push"}:
+def telegram_diagnostics():
+    def api_get(method):
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/{method}"
+        req = urllib.request.Request(url, headers={"User-Agent": "CRTStalker/1.0"})
+        with urllib.request.urlopen(req, timeout=20) as r:
+            return json.loads(r.read().decode("utf-8"))
+
+    me = api_get("getMe")
+    username = me.get("result", {}).get("username", "(sin username)")
+    updates = api_get("getUpdates")
+    chats = []
+    for update in updates.get("result", []):
+        msg = update.get("message") or update.get("edited_message") or update.get("channel_post") or {}
+        chat = msg.get("chat") or {}
+        if "id" in chat:
+            chats.append({
+                "id": chat.get("id"),
+                "type": chat.get("type"),
+                "first_name": chat.get("first_name"),
+                "username": chat.get("username"),
+            })
+    print(f"Telegram bot: @{username}")
+    print("Chats detectados:", json.dumps(chats, ensure_ascii=False))
+
+if EVENT_NAME == "push":
+    telegram_diagnostics()
+elif EVENT_NAME == "workflow_dispatch":
     send("✅ CRTStalker conectado y funcionando. A partir de ahora buscaré anuncios nuevos automáticamente.")
 
 seen = set()
