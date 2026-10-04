@@ -107,7 +107,11 @@ if STATE.exists():
 found = []
 for query in SEARCHES:
     try:
-        for item in fetch_rss(query):
+        results = fetch_rss(query)
+        if EVENT_NAME == "push":
+            sample = results[0]["link"] if results else "(sin resultados)"
+            print(f"Search diagnostic: {query} -> {len(results)} resultados; primero: {sample}")
+        for item in results:
             if item["link"] and is_target(item["link"]):
                 found.append(item)
     except Exception as e:
