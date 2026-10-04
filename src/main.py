@@ -7,24 +7,29 @@ BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 EVENT_NAME = os.environ.get("GITHUB_EVENT_NAME", "")
 
 SEARCHES = [
-    'site:wallapop.com "Sony PVM"',
-    'site:wallapop.com "Sony BVM"',
-    'site:wallapop.com "TV de tubo"',
-    'site:wallapop.com "monitor profesional video"',
-    'site:wallapop.com "video wall CRT"',
-    'site:wallapop.com "Time Base Corrector"',
-    'site:wallapop.com TBC video',
-    'site:wallapop.com "Edirol V4"',
-    'site:wallapop.com "Edirol V8"',
-    'site:wallapop.com "camara VHS"',
-    'site:wallapop.com "camara analogica"',
-    'site:wallapop.com "Super 8"',
-    'site:vinted.es "Sony PVM"',
-    'site:vinted.es "TV de tubo"',
-    'site:vinted.es CRT monitor',
-    'site:vinted.es "camara VHS"',
-    'site:vinted.es "camara analogica"',
-    'site:vinted.es "Super 8"',
+    # Monitores profesionales / CRT
+    'site:es.wallapop.com ("Sony PVM" OR "Sony BVM" OR "JVC TM" OR "monitor broadcast" OR "monitor profesional video" OR "monitor BNC")',
+    'site:vinted.es ("Sony PVM" OR "Sony BVM" OR "JVC TM" OR "monitor broadcast" OR "monitor profesional video" OR "monitor BNC")',
+
+    # TV de tubo / videowall
+    'site:es.wallapop.com ("TV de tubo" OR "televisor de tubo" OR "televisor CRT" OR "CRT TV" OR "videowall CRT" OR "video wall antiguo" OR "muro de televisores")',
+    'site:vinted.es ("TV de tubo" OR "televisor de tubo" OR "televisor CRT" OR "CRT TV" OR "videowall CRT" OR "video wall antiguo")',
+
+    # Mezcla y procesado
+    'site:es.wallapop.com ("Edirol V4" OR "Edirol V8" OR "Roland LVS-400" OR "Time Base Corrector" OR "TBC video" OR "frame synchronizer" OR "video mixer" OR "mezclador de video")',
+    'site:vinted.es ("Edirol V4" OR "Edirol V8" OR "Time Base Corrector" OR "TBC video" OR "video mixer" OR "mezclador de video")',
+
+    # Cámaras de vídeo analógicas
+    'site:es.wallapop.com ("camara VHS" OR "videocamara VHS" OR "VHS-C" OR "S-VHS" OR "Video8" OR "Hi8" OR "Betacam" OR "U-matic" OR "camara ENG" OR "camara broadcast")',
+    'site:vinted.es ("camara VHS" OR "videocamara VHS" OR "VHS-C" OR "S-VHS" OR "Video8" OR "Hi8" OR "Betacam" OR "camara analogica")',
+
+    # Cámaras de cine antiguas
+    'site:es.wallapop.com ("camara Super 8" OR "camara 8mm" OR "camara 16mm" OR "camara de cine antigua" OR "film camera")',
+    'site:vinted.es ("camara Super 8" OR "camara 8mm" OR "camara 16mm" OR "camara de cine antigua" OR "film camera")',
+
+    # CCTV / procesadores / accesorios de vídeo
+    'site:es.wallapop.com ("camara CCTV antigua" OR "Ikegami" OR "Extron" OR "matrix BNC" OR "video processor" OR "scan converter" OR "C-mount")',
+    'site:vinted.es ("camara CCTV" OR "Ikegami" OR "Extron" OR "C-mount" OR "lente CCTV")',
 ]
 
 STATE = Path("data/seen.json")
@@ -32,7 +37,7 @@ STATE.parent.mkdir(parents=True, exist_ok=True)
 
 def fetch_rss(query):
     q = urllib.parse.quote(query)
-    url = f"https://www.google.com/search?q={q}&output=rss"
+    url = f"https://www.bing.com/search?q={q}&format=rss"
     req = urllib.request.Request(url, headers={"User-Agent":"Mozilla/5.0"})
     with urllib.request.urlopen(req, timeout=25) as r:
         data = r.read()
@@ -46,7 +51,7 @@ def fetch_rss(query):
     return out
 
 def is_target(link):
-    return "wallapop.com" in link or "vinted.es" in link
+    return "es.wallapop.com" in link or "wallapop.com" in link or "vinted.es" in link
 
 def send(msg):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
