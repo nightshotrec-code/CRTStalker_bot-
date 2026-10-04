@@ -1,101 +1,154 @@
-import os, re, json, html, urllib.parse, urllib.request, urllib.error
+import os
+import re
+import json
+import urllib.parse
+import urllib.request
+import urllib.error
 from pathlib import Path
-from xml.etree import ElementTree as ET
+from urllib.parse import urlparse
 
-CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
+CONFIGURED_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
+BRAVE_API_KEY = os.environ["BRAVE_SEARCH_API_KEY"]
 EVENT_NAME = os.environ.get("GITHUB_EVENT_NAME", "")
-
-SEARCHES = [
-    # Monitores profesionales / CRT
-    'site:es.wallapop.com ("Sony PVM" OR "Sony BVM" OR "JVC TM" OR "monitor broadcast" OR "monitor profesional video" OR "monitor BNC")',
-    'site:vinted.es ("Sony PVM" OR "Sony BVM" OR "JVC TM" OR "monitor broadcast" OR "monitor profesional video" OR "monitor BNC")',
-
-    # TV de tubo / videowall
-    'site:es.wallapop.com ("TV de tubo" OR "televisor de tubo" OR "televisor CRT" OR "CRT TV" OR "videowall CRT" OR "video wall antiguo" OR "muro de televisores")',
-    'site:vinted.es ("TV de tubo" OR "televisor de tubo" OR "televisor CRT" OR "CRT TV" OR "videowall CRT" OR "video wall antiguo")',
-
-    # Mezcla y procesado
-    'site:es.wallapop.com ("Edirol V4" OR "Edirol V8" OR "Roland LVS-400" OR "Time Base Corrector" OR "TBC video" OR "frame synchronizer" OR "video mixer" OR "mezclador de video")',
-    'site:vinted.es ("Edirol V4" OR "Edirol V8" OR "Time Base Corrector" OR "TBC video" OR "video mixer" OR "mezclador de video")',
-
-    # Cámaras de vídeo analógicas
-    'site:es.wallapop.com ("camara VHS" OR "videocamara VHS" OR "VHS-C" OR "S-VHS" OR "Video8" OR "Hi8" OR "Betacam" OR "U-matic" OR "camara ENG" OR "camara broadcast")',
-    'site:vinted.es ("camara VHS" OR "videocamara VHS" OR "VHS-C" OR "S-VHS" OR "Video8" OR "Hi8" OR "Betacam" OR "camara analogica")',
-
-    # Cámaras de cine antiguas
-    'site:es.wallapop.com ("camara Super 8" OR "camara 8mm" OR "camara 16mm" OR "camara de cine antigua" OR "film camera")',
-    'site:vinted.es ("camara Super 8" OR "camara 8mm" OR "camara 16mm" OR "camara de cine antigua" OR "film camera")',
-
-    # CCTV / procesadores / accesorios de vídeo
-    'site:es.wallapop.com ("camara CCTV antigua" OR "Ikegami" OR "Extron" OR "matrix BNC" OR "video processor" OR "scan converter" OR "C-mount")',
-    'site:vinted.es ("camara CCTV" OR "Ikegami" OR "Extron" OR "C-mount" OR "lente CCTV")',
-]
 
 STATE = Path("data/seen.json")
 STATE.parent.mkdir(parents=True, exist_ok=True)
 
-def fetch_rss(query):
-    q = urllib.parse.quote(query)
-    url = f"https://www.bing.com/search?q={q}&format=rss"
-    req = urllib.request.Request(url, headers={"User-Agent":"Mozilla/5.0"})
-    with urllib.request.urlopen(req, timeout=25) as r:
-        data = r.read()
-    root = ET.fromstring(data)
-    out = []
-    for item in root.findall(".//item"):
-        title = html.unescape(item.findtext("title") or "").strip()
-        link = (item.findtext("link") or "").strip()
-        desc = html.unescape(item.findtext("description") or "").strip()
-        out.append({"title": title, "link": link, "desc": re.sub("<.*?>","",desc)})
-    return out
+SEARCHES = [
+    (
+        "Wallapop · CRT / vídeo",
+        'site:es.wallapop.com/item/ ("Sony PVM" OR "Sony BVM" OR "JVC TM" OR "monitor broadcast" OR "monitor profesional video" OR "monitor BNC" OR "TV de tubo" OR "televisor CRT" OR "videowall CRT" OR "video wall" OR "muro de televisores" OR "Edirol V4" OR "Edirol V8" OR "Roland LVS-400" OR "Time Base Corrector" OR "TBC video" OR "frame synchronizer" OR "Extron" OR "Ikegami")',
+    ),
+    (
+        "Wallapop · cámaras",
+        'site:es.wallapop.com/item/ ("camara VHS" OR "videocamara VHS" OR "VHS-C" OR "S-VHS" OR "Video8" OR "Hi8" OR "Betacam" OR "U-matic" OR "camara ENG" OR "camara broadcast" OR "camara analogica" OR "camara Super 8" OR "camara 8mm" OR "camara 16mm" OR "camara cine antigua" OR "camara CCTV antigua")',
+    ),
+    (
+        "Vinted · CRT / vídeo",
+        'site:vinted.es/items/ ("Sony PVM" OR "Sony BVM" OR "JVC TM" OR "monitor broadcast" OR "monitor profesional video" OR "monitor BNC" OR "TV de tubo" OR "televisor CRT" OR "videowall CRT" OR "Edirol V4" OR "Edirol V8" OR "Time Base Corrector" OR "TBC video" OR "Extron" OR "Ikegami")',
+    ),
+    (
+        "Vinted · cámaras",
+        'site:vinted.es/items/ ("camara VHS" OR "videocamara VHS" OR "VHS-C" OR "S-VHS" OR "Video8" OR "Hi8" OR "Betacam" OR "camara analogica" OR "camara Super 8" OR "camara 8mm" OR "camara 16mm" OR "camara cine antigua" OR "camara CCTV")',
+    ),
+]
 
-def is_target(link):
-    return "es.wallapop.com" in link or "wallapop.com" in link or "vinted.es" in link
 
-def send(msg):
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    payload = urllib.parse.urlencode({
-        "chat_id": CHAT_ID,
-        "text": msg,
-        "disable_web_page_preview": "false",
-    }).encode()
-    req = urllib.request.Request(url, data=payload, method="POST")
+def brave_search(query):
+    params = urllib.parse.urlencode(
+        {
+            "q": query,
+            "country": "ES",
+            "search_lang": "es",
+            "count": 20,
+            "safesearch": "off",
+        }
+    )
+    url = f"https://api.search.brave.com/res/v1/web/search?{params}"
+    req = urllib.request.Request(
+        url,
+        headers={
+            "Accept": "application/json",
+            "Accept-Encoding": "gzip",
+            "X-Subscription-Token": BRAVE_API_KEY,
+            "User-Agent": "CRTStalker/1.0",
+        },
+    )
     try:
-        with urllib.request.urlopen(req, timeout=20) as r:
-            r.read()
-    except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"Telegram API error {e.code}: {body}") from e
+        with urllib.request.urlopen(req, timeout=30) as response:
+            raw = response.read()
+            if response.headers.get("Content-Encoding") == "gzip":
+                import gzip
+                raw = gzip.decompress(raw)
+            data = json.loads(raw.decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"Brave Search API error {exc.code}: {body}") from exc
 
-def telegram_diagnostics():
-    def api_get(method):
-        url = f"https://api.telegram.org/bot{BOT_TOKEN}/{method}"
-        req = urllib.request.Request(url, headers={"User-Agent": "CRTStalker/1.0"})
-        with urllib.request.urlopen(req, timeout=20) as r:
-            return json.loads(r.read().decode("utf-8"))
+    results = []
+    for item in data.get("web", {}).get("results", []):
+        results.append(
+            {
+                "title": (item.get("title") or "").strip(),
+                "link": (item.get("url") or "").strip(),
+                "desc": (item.get("description") or "").strip(),
+            }
+        )
+    return results
 
-    me = api_get("getMe")
-    username = me.get("result", {}).get("username", "(sin username)")
-    updates = api_get("getUpdates")
-    chats = []
-    for update in updates.get("result", []):
-        msg = update.get("message") or update.get("edited_message") or update.get("channel_post") or {}
+
+def platform_for(link):
+    host = urlparse(link).netloc.lower()
+    if "wallapop.com" in host:
+        return "Wallapop"
+    if "vinted.es" in host:
+        return "Vinted"
+    return None
+
+
+def extract_price(text):
+    match = re.search(r"(?<!\d)(\d{1,5}(?:[\.,]\d{1,2})?)\s?€", text or "")
+    return f"{match.group(1)} €" if match else None
+
+
+def telegram_private_chats():
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/getUpdates"
+    req = urllib.request.Request(url, headers={"User-Agent": "CRTStalker/1.0"})
+    with urllib.request.urlopen(req, timeout=20) as response:
+        data = json.loads(response.read().decode("utf-8"))
+
+    chats = {}
+    for update in data.get("result", []):
+        msg = update.get("message") or update.get("edited_message") or {}
         chat = msg.get("chat") or {}
-        if "id" in chat:
-            chats.append({
-                "id": chat.get("id"),
-                "type": chat.get("type"),
+        if chat.get("type") == "private" and "id" in chat:
+            chats[str(chat["id"])] = {
+                "id": str(chat["id"]),
                 "first_name": chat.get("first_name"),
                 "username": chat.get("username"),
-            })
-    print(f"Telegram bot: @{username}")
-    print("Chats detectados:", json.dumps(chats, ensure_ascii=False))
+            }
+    return list(chats.values())
 
-if EVENT_NAME == "push":
-    telegram_diagnostics()
-elif EVENT_NAME == "workflow_dispatch":
-    send("✅ CRTStalker conectado y funcionando. A partir de ahora buscaré anuncios nuevos automáticamente.")
+
+def send_to_chat(chat_id, message):
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    payload = urllib.parse.urlencode(
+        {
+            "chat_id": chat_id,
+            "text": message,
+            "disable_web_page_preview": "false",
+        }
+    ).encode()
+    req = urllib.request.Request(url, data=payload, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=20) as response:
+            response.read()
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"Telegram API error {exc.code}: {body}") from exc
+
+
+def send(message):
+    if CONFIGURED_CHAT_ID:
+        try:
+            send_to_chat(CONFIGURED_CHAT_ID, message)
+            return
+        except RuntimeError as exc:
+            if "chat not found" not in str(exc):
+                raise
+            print("El TELEGRAM_CHAT_ID configurado no existe para este bot; intentando detectar el chat privado.")
+
+    chats = telegram_private_chats()
+    if len(chats) != 1:
+        raise RuntimeError(
+            f"No pude seleccionar un único chat privado de Telegram. Chats detectados: {json.dumps(chats, ensure_ascii=False)}"
+        )
+
+    fallback_id = chats[0]["id"]
+    print(f"Usando automáticamente el chat privado detectado: {fallback_id}")
+    send_to_chat(fallback_id, message)
+
 
 seen = set()
 if STATE.exists():
@@ -105,35 +158,50 @@ if STATE.exists():
         seen = set()
 
 found = []
-for query in SEARCHES:
+for label, query in SEARCHES:
     try:
-        results = fetch_rss(query)
-        if EVENT_NAME == "push":
-            sample = results[0]["link"] if results else "(sin resultados)"
-            print(f"Search diagnostic: {query} -> {len(results)} resultados; primero: {sample}")
+        results = brave_search(query)
+        valid = 0
         for item in results:
-            if item["link"] and is_target(item["link"]):
+            platform = platform_for(item["link"])
+            if platform:
+                item["platform"] = platform
                 found.append(item)
-    except Exception as e:
-        print(f"Search failed: {query}: {e}")
+                valid += 1
+        print(f"{label}: {len(results)} resultados Brave, {valid} anuncios válidos.")
+    except Exception as exc:
+        print(f"Search failed [{label}]: {exc}")
 
 dedup = {}
-for x in found:
-    dedup[x["link"]] = x
+for item in found:
+    dedup[item["link"]] = item
 found = list(dedup.values())
 
-first_run = not STATE.exists() or not seen
-new_items = [x for x in found if x["link"] not in seen]
+first_run = not seen
+new_items = [item for item in found if item["link"] not in seen]
 
 if first_run:
-    print(f"Primera ejecución: guardando {len(found)} resultados existentes.")
+    print(f"Primera ejecución con Brave: guardando {len(found)} anuncios existentes sin notificar.")
+    if EVENT_NAME in {"push", "workflow_dispatch"}:
+        send(
+            f"✅ CRTStalker conectado. Brave Search funciona y he cargado {len(found)} anuncios como base. "
+            "A partir de ahora te avisaré solo de enlaces nuevos."
+        )
 else:
-    for x in new_items:
-        platform = "Wallapop" if "wallapop.com" in x["link"] else "Vinted"
-        msg = f"🔴 {x['title']}\n{platform}\n{x['link']}"
-        send(msg)
-        print("Sent:", x["link"])
+    print(f"Encontrados {len(found)} anuncios; nuevos: {len(new_items)}.")
+    for item in new_items:
+        price = extract_price(item["title"] + " " + item["desc"])
+        price_line = f" · {price}" if price else ""
+        message = (
+            f"🔴 {item['title']}\n"
+            f"{item['platform']}{price_line}\n"
+            f"{item['link']}"
+        )
+        send(message)
+        print("Sent:", item["link"])
 
-seen.update(x["link"] for x in found)
-STATE.write_text(json.dumps(sorted(seen), ensure_ascii=False, indent=2), encoding="utf-8")
-# telegram retest trigger
+seen.update(item["link"] for item in found)
+STATE.write_text(
+    json.dumps(sorted(seen), ensure_ascii=False, indent=2),
+    encoding="utf-8",
+)
