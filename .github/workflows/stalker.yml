@@ -9,6 +9,7 @@ on:
       - main
     paths:
       - ".github/workflows/stalker.yml"
+      - "src/main.py"
 
 permissions:
   contents: write
