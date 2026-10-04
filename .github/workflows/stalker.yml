@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "*/20 * * * *"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/stalker.yml"
 
 permissions:
   contents: write
