@@ -11,6 +11,7 @@ BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 CONFIGURED_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
 BRAVE_API_KEY = os.environ["BRAVE_SEARCH_API_KEY"]
 EVENT_NAME = os.environ.get("GITHUB_EVENT_NAME", "")
+HOME_REGION = "Valencia"
 
 STATE = Path("data/seen.json")
 STATE.parent.mkdir(parents=True, exist_ok=True)
@@ -88,8 +89,18 @@ def platform_for(link):
 
 
 def extract_price(text):
-    match = re.search(r"(?<!\d)(\d{1,5}(?:[\.,]\d{1,2})?)\s?€", text or "")
+    match = re.search(r"(?<!\\d)(\\d{1,5}(?:[\\.,]\\d{1,2})?)\\s?€", text or "")
     return f"{match.group(1)} €" if match else None
+
+
+def is_valencia(item):
+    text = f"{item.get('title', '')} {item.get('desc', '')}".lower()
+    terms = [
+        "valencia", "valència", "torrent", "paterna", "mislata",
+        "burjassot", "sagunto", "sagunt", "gandia", "gandía",
+        "alzira", "xirivella", "manises", "quart de poblet"
+    ]
+    return any(term in text for term in terms)
 
 
 def telegram_private_chats():
@@ -179,6 +190,7 @@ found = list(dedup.values())
 
 first_run = not seen
 new_items = [item for item in found if item["link"] not in seen]
+new_items.sort(key=lambda item: (not is_valencia(item), item["platform"], item["title"].lower()))
 
 if first_run:
     print(f"Primera ejecución con Brave: guardando {len(found)} anuncios existentes sin notificar.")
@@ -192,9 +204,11 @@ else:
     for item in new_items:
         price = extract_price(item["title"] + " " + item["desc"])
         price_line = f" · {price}" if price else ""
+        location_line = "📍 Valencia / cerca" if is_valencia(item) else "🇪🇸 España"
         message = (
             f"🔴 {item['title']}\n"
             f"{item['platform']}{price_line}\n"
+            f"{location_line}\n"
             f"{item['link']}"
         )
         send(message)
