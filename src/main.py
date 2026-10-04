@@ -4,6 +4,7 @@ from xml.etree import ElementTree as ET
 
 CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
+EVENT_NAME = os.environ.get("GITHUB_EVENT_NAME", "")
 
 SEARCHES = [
     'site:wallapop.com "Sony PVM"',
@@ -57,6 +58,9 @@ def send(msg):
     req = urllib.request.Request(url, data=payload, method="POST")
     with urllib.request.urlopen(req, timeout=20) as r:
         r.read()
+
+if EVENT_NAME == "workflow_dispatch":
+    send("✅ CRTStalker conectado y funcionando. A partir de ahora buscaré anuncios nuevos automáticamente.")
 
 seen = set()
 if STATE.exists():
