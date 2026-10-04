@@ -101,3 +101,4 @@ else:
 
 seen.update(x["link"] for x in found)
 STATE.write_text(json.dumps(sorted(seen), ensure_ascii=False, indent=2), encoding="utf-8")
+# telegram retest trigger
