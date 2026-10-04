@@ -63,7 +63,7 @@ def send(msg):
         body = e.read().decode("utf-8", errors="replace")
         raise RuntimeError(f"Telegram API error {e.code}: {body}") from e
 
-if EVENT_NAME == "workflow_dispatch":
+if EVENT_NAME in {"workflow_dispatch", "push"}:
     send("✅ CRTStalker conectado y funcionando. A partir de ahora buscaré anuncios nuevos automáticamente.")
 
 seen = set()
