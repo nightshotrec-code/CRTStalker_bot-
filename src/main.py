@@ -103,6 +103,41 @@ def is_valencia(item):
     return any(term in text for term in terms)
 
 
+def is_unwanted_vhs_media(item):
+    """
+    Descarta anuncios de cintas/cassettes/películas VHS,
+    pero conserva hardware VHS como cámaras, reproductores y grabadores.
+    """
+    title = (item.get("title") or "").lower()
+    desc = (item.get("desc") or "").lower()
+    text = f"{title} {desc}"
+
+    hardware_terms = [
+        "camara", "cámara", "videocamara", "videocámara", "camcorder",
+        "reproductor", "grabador", "videograbador", "vcr", "magnetoscopio",
+        "deck", "player", "recorder"
+    ]
+    if any(term in title for term in hardware_terms):
+        return False
+
+    media_terms_title = [
+        "cinta vhs", "cintas vhs", "cassette vhs", "cassettes vhs",
+        "casete vhs", "casetes vhs", "pelicula vhs", "película vhs",
+        "peliculas vhs", "películas vhs", "lote vhs", "vhs tape",
+        "vhs tapes", "video cassette", "videocassette",
+        "cinta virgen", "cintas virgenes", "cintas vírgenes"
+    ]
+    if any(term in title for term in media_terms_title):
+        return True
+
+    strong_desc_terms = [
+        "lote de cintas vhs", "lote cintas vhs", "coleccion de vhs",
+        "colección de vhs", "peliculas en vhs", "películas en vhs",
+        "cassettes vhs", "cintas vhs grabadas"
+    ]
+    return any(term in text for term in strong_desc_terms)
+
+
 def telegram_private_chats():
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/getUpdates"
     req = urllib.request.Request(url, headers={"User-Agent": "CRTStalker/1.0"})
@@ -175,7 +210,7 @@ for label, query in SEARCHES:
         valid = 0
         for item in results:
             platform = platform_for(item["link"])
-            if platform:
+            if platform and not is_unwanted_vhs_media(item):
                 item["platform"] = platform
                 found.append(item)
                 valid += 1
