@@ -112,13 +112,19 @@ def is_unwanted_vhs_media(item):
     desc = (item.get("desc") or "").lower()
     text = f"{title} {desc}"
 
-    hardware_terms = [
-        "camara", "cámara", "videocamara", "videocámara", "camcorder",
-        "reproductor", "grabador", "videograbador", "vcr", "magnetoscopio",
-        "deck", "player", "recorder"
+    camera_terms = [
+        "camara", "cámara", "videocamara", "videocámara", "camcorder"
     ]
-    if any(term in title for term in hardware_terms):
+    if any(term in title for term in camera_terms):
         return False
+
+    unwanted_vhs_hardware = [
+        "reproductor vhs", "grabador vhs", "videograbador", "video grabador",
+        "vcr", "magnetoscopio", "vhs player", "vhs recorder",
+        "video recorder", "video player", "deck vhs", "vhs deck"
+    ]
+    if any(term in text for term in unwanted_vhs_hardware):
+        return True
 
     media_terms_title = [
         "cinta vhs", "cintas vhs", "cassette vhs", "cassettes vhs",
