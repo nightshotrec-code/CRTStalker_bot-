@@ -125,6 +125,18 @@ def is_allowed_by_price(item):
     return price is not None and price < 400
 
 
+def is_sold_or_unavailable(item):
+    text = f"{item.get('title', '')} {item.get('desc', '')}".lower()
+
+    unavailable_terms = [
+        "vendido", "vendida", "sold", "reservado", "reservada",
+        "no disponible", "ya no está disponible", "ya no esta disponible",
+        "artículo vendido", "articulo vendido", "producto vendido",
+        "agotado", "retirado", "retirada"
+    ]
+    return any(term in text for term in unavailable_terms)
+
+
 def is_valencia(item):
     text = f"{item.get('title', '')} {item.get('desc', '')}".lower()
     terms = [
@@ -248,7 +260,12 @@ for label, query in SEARCHES:
         valid = 0
         for item in results:
             platform = platform_for(item["link"])
-            if platform and not is_unwanted_vhs_media(item) and is_allowed_by_price(item):
+            if (
+                platform
+                and not is_unwanted_vhs_media(item)
+                and is_allowed_by_price(item)
+                and not is_sold_or_unavailable(item)
+            ):
                 item["platform"] = platform
                 found.append(item)
                 valid += 1
