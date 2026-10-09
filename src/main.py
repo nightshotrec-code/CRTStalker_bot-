@@ -80,9 +80,49 @@ def platform_for(link):
     return None
 
 
+def extract_price_value(text):
+    match = re.search(r"(?<!\d)(\d{1,5}(?:[\.,]\d{1,2})?)\s?€", text or "")
+    if not match:
+        return None
+    return float(match.group(1).replace(",", "."))
+
+
 def extract_price(text):
-    match = re.search(r"(?<!\\d)(\\d{1,5}(?:[\\.,]\\d{1,2})?)\\s?€", text or "")
-    return f"{match.group(1)} €" if match else None
+    value = extract_price_value(text)
+    if value is None:
+        return None
+    if value.is_integer():
+        return f"{int(value)} €"
+    return f"{value:.2f} €".replace(".", ",")
+
+
+def is_consumer_crt_tv(item):
+    title = (item.get("title") or "").lower()
+    desc = (item.get("desc") or "").lower()
+    text = f"{title} {desc}"
+
+    professional_terms = [
+        "sony pvm", "sony bvm", "jvc tm", "monitor broadcast",
+        "monitor profesional", "monitor bnc", "ikagami", "ikegami"
+    ]
+    if any(term in text for term in professional_terms):
+        return False
+
+    tv_terms = [
+        "sony trinitron", "tv de tubo", "televisor de tubo",
+        "television de tubo", "televisión de tubo", "televisor crt",
+        "television crt", "televisión crt", "tv crt",
+        "tubo catodico", "tubo catódico"
+    ]
+    return any(term in text for term in tv_terms)
+
+
+def is_allowed_by_price(item):
+    if not is_consumer_crt_tv(item):
+        return True
+
+    price = extract_price_value(f"{item.get('title', '')} {item.get('desc', '')}")
+    return price is not None and price < 400
 
 
 def is_valencia(item):
@@ -208,7 +248,7 @@ for label, query in SEARCHES:
         valid = 0
         for item in results:
             platform = platform_for(item["link"])
-            if platform and not is_unwanted_vhs_media(item):
+            if platform and not is_unwanted_vhs_media(item) and is_allowed_by_price(item):
                 item["platform"] = platform
                 found.append(item)
                 valid += 1
