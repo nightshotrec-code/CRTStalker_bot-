@@ -19,11 +19,11 @@ STATE.parent.mkdir(parents=True, exist_ok=True)
 SEARCHES = [
     (
         "Wallapop · CRT / vídeo",
-        'site:es.wallapop.com/item/ ("Sony PVM" OR "Sony BVM" OR "JVC TM" OR "monitor broadcast" OR "monitor profesional video" OR "monitor BNC" OR "TV de tubo" OR "televisor CRT" OR "videowall CRT" OR "video wall" OR "muro de televisores" OR "Edirol V4" OR "Edirol V8" OR "Roland LVS-400" OR "Time Base Corrector" OR "TBC video" OR "Extron" OR "Ikegami")',
+        'site:es.wallapop.com/item/ ("Sony PVM" OR "Sony BVM" OR "JVC TM" OR "monitor broadcast" OR "monitor profesional video" OR "monitor BNC" OR "TV de tubo" OR "televisor CRT" OR "videowall CRT" OR "video wall" OR "muro de televisores" OR "Edirol V4" OR "Edirol V8" OR "Roland LVS-400" OR "Time Base Corrector" OR "TBC video" OR "Extron" OR "Ikegami" OR "VIDEONICS")',
     ),
     (
         "Vinted · CRT / vídeo",
-        'site:vinted.es/items/ ("Sony PVM" OR "Sony BVM" OR "JVC TM" OR "monitor broadcast" OR "monitor profesional video" OR "monitor BNC" OR "TV de tubo" OR "televisor CRT" OR "videowall CRT" OR "Edirol V4" OR "Edirol V8" OR "Time Base Corrector" OR "TBC video" OR "Extron" OR "Ikegami")',
+        'site:vinted.es/items/ ("Sony PVM" OR "Sony BVM" OR "JVC TM" OR "monitor broadcast" OR "monitor profesional video" OR "monitor BNC" OR "TV de tubo" OR "televisor CRT" OR "videowall CRT" OR "Edirol V4" OR "Edirol V8" OR "Time Base Corrector" OR "TBC video" OR "Extron" OR "Ikegami" OR "VIDEONICS")',
     ),
 ]
 
