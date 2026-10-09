@@ -27,7 +27,7 @@ SEARCHES = [
     ),
     (
         "Facebook Marketplace · CRT / vídeo",
-        'site:facebook.com/marketplace/item/ ("Sony PVM" OR "Sony BVM" OR "Sony Trinitron" OR "JVC TM" OR "monitor broadcast" OR "monitor profesional video" OR "monitor BNC" OR "TV de tubo" OR "televisor CRT" OR "videowall CRT" OR "video wall" OR "muro de televisores" OR "Edirol V4" OR "Edirol V8" OR "Roland LVS-400" OR "Time Base Corrector" OR "TBC video" OR "Extron" OR "Ikegami" OR "VIDEONICS")',
+        'site:facebook.com/marketplace/item/ ("España" OR "Spain" OR "Madrid" OR "Barcelona" OR "Valencia" OR "Sevilla" OR "Zaragoza" OR "Málaga" OR "Alicante" OR "Murcia" OR "Bilbao" OR "Valladolid" OR "Vigo" OR "A Coruña" OR "Granada" OR "Córdoba" OR "Palma" OR "Tenerife" OR "Las Palmas") ("Sony PVM" OR "Sony BVM" OR "Sony Trinitron" OR "JVC TM" OR "monitor broadcast" OR "monitor profesional video" OR "monitor BNC" OR "TV de tubo" OR "televisor CRT" OR "videowall CRT" OR "video wall" OR "muro de televisores" OR "Edirol V4" OR "Edirol V8" OR "Roland LVS-400" OR "Time Base Corrector" OR "TBC video" OR "Extron" OR "Ikegami" OR "VIDEONICS")',
     )
 ]
 
@@ -84,6 +84,23 @@ def platform_for(link):
     if "facebook.com" in host:
         return "Facebook Marketplace"
     return None
+
+
+def is_facebook_spain(item):
+    if item.get("platform") != "Facebook Marketplace":
+        return True
+
+    text = f"{item.get('title', '')} {item.get('desc', '')}".lower()
+
+    spain_terms = [
+        "españa", "spain", "madrid", "barcelona", "valencia", "valència",
+        "sevilla", "zaragoza", "málaga", "malaga", "alicante", "murcia",
+        "bilbao", "valladolid", "vigo", "a coruña", "coruña", "granada",
+        "córdoba", "cordoba", "palma", "mallorca", "tenerife", "las palmas",
+        "castellón", "castellon", "gijón", "gijon", "oviedo", "pamplona",
+        "santander", "salamanca", "toledo", "albacete", "badajoz"
+    ]
+    return any(term in text for term in spain_terms)
 
 
 def extract_price_value(text):
@@ -266,13 +283,16 @@ for label, query in SEARCHES:
         valid = 0
         for item in results:
             platform = platform_for(item["link"])
+            if platform:
+                item["platform"] = platform
+
             if (
                 platform
+                and is_facebook_spain(item)
                 and not is_unwanted_vhs_media(item)
                 and is_allowed_by_price(item)
                 and not is_sold_or_unavailable(item)
             ):
-                item["platform"] = platform
                 found.append(item)
                 valid += 1
         print(f"{label}: {len(results)} resultados Brave, {valid} anuncios válidos.")
