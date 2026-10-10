@@ -240,13 +240,40 @@ def is_valencia(item):
 
 
 def is_unwanted_vhs_media(item):
-    """
-    Descarta anuncios de cintas/cassettes/películas VHS,
-    pero conserva hardware VHS como cámaras, reproductores y grabadores.
-    """
+    """Descarta cintas, servicios y reproductores VHS; conserva cámaras analógicas."""
     title = (item.get("title") or "").lower()
     desc = (item.get("desc") or "").lower()
     text = f"{title} {desc}"
+
+    service_terms = [
+        "digitalización vhs", "digitalizacion vhs", "digitalización de vhs",
+        "digitalizacion de vhs", "paso a digital", "transferencia vhs",
+        "convertir vhs", "conversión vhs", "conversion vhs"
+    ]
+    if any(term in text for term in service_terms):
+        return True
+
+    media_terms = [
+        "cinta vhs", "cintas vhs", "cinta vhs-c", "cintas vhs-c",
+        "cinta para cámara", "cinta para camara", "cintas para cámara",
+        "cintas para camara", "cassette vhs", "cassettes vhs",
+        "casete vhs", "casetes vhs", "pelicula vhs", "película vhs",
+        "peliculas vhs", "películas vhs", "lote vhs", "lote cintas",
+        "vhs tape", "vhs tapes", "video cassette", "videocassette",
+        "cinta virgen", "cintas virgenes", "cintas vírgenes",
+        "cinta limpiadora", "cintas limpiadoras", "cleaning tape"
+    ]
+    if any(term in text for term in media_terms):
+        return True
+
+    unwanted_vhs_hardware = [
+        "reproductor vhs", "grabador vhs", "videograbador", "video grabador",
+        "vcr", "magnetoscopio", "vhs player", "vhs recorder",
+        "video recorder", "video player", "deck vhs", "vhs deck",
+        "rebobinador vhs"
+    ]
+    if any(term in text for term in unwanted_vhs_hardware):
+        return True
 
     camera_terms = [
         "camara", "cámara", "videocamara", "videocámara", "camcorder"
@@ -254,28 +281,9 @@ def is_unwanted_vhs_media(item):
     if any(term in title for term in camera_terms):
         return False
 
-    unwanted_vhs_hardware = [
-        "reproductor vhs", "grabador vhs", "videograbador", "video grabador",
-        "vcr", "magnetoscopio", "vhs player", "vhs recorder",
-        "video recorder", "video player", "deck vhs", "vhs deck"
-    ]
-    if any(term in text for term in unwanted_vhs_hardware):
-        return True
-
-    media_terms_title = [
-        "cinta vhs", "cintas vhs", "cassette vhs", "cassettes vhs",
-        "casete vhs", "casetes vhs", "pelicula vhs", "película vhs",
-        "peliculas vhs", "películas vhs", "lote vhs", "vhs tape",
-        "vhs tapes", "video cassette", "videocassette",
-        "cinta virgen", "cintas virgenes", "cintas vírgenes"
-    ]
-    if any(term in title for term in media_terms_title):
-        return True
-
     strong_desc_terms = [
-        "lote de cintas vhs", "lote cintas vhs", "coleccion de vhs",
-        "colección de vhs", "peliculas en vhs", "películas en vhs",
-        "cassettes vhs", "cintas vhs grabadas"
+        "coleccion de vhs", "colección de vhs", "peliculas en vhs",
+        "películas en vhs", "cintas vhs grabadas"
     ]
     return any(term in text for term in strong_desc_terms)
 
