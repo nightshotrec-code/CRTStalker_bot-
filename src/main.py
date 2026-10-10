@@ -105,7 +105,7 @@ def is_facebook_spain(item):
 
 
 def extract_price_value(text):
-    match = re.search(r"(?<!\d)(\d{1,5}(?:[\.,]\d{1,2})?)\s?€", text or "")
+    match = re.search(r"(?<!\d)(\d{1,5}(?:[\.,]\d{1,2})?)\s?(?:€|EUR)", text or "", re.IGNORECASE)
     if not match:
         return None
     return float(match.group(1).replace(",", "."))
