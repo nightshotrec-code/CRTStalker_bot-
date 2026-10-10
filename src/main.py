@@ -19,17 +19,29 @@ STATE.parent.mkdir(parents=True, exist_ok=True)
 
 SEARCHES = [
     (
-        "Wallapop · CRT / vídeo",
-        'site:es.wallapop.com/item/ ("Sony PVM" OR "Sony BVM" OR "Sony Trinitron" OR "JVC TM" OR "monitor broadcast" OR "monitor profesional video" OR "monitor BNC" OR "TV de tubo" OR "televisor CRT" OR "videowall CRT" OR "video wall" OR "muro de televisores" OR "Edirol V4" OR "Edirol V8" OR "Roland LVS-400" OR "Time Base Corrector" OR "TBC video" OR "Extron" OR "Ikegami" OR "VIDEONICS")',
+        "Wallapop · monitores profesionales",
+        'site:es.wallapop.com/item/ ("Sony PVM" OR "Sony BVM" OR "JVC TM" OR "monitor broadcast" OR "monitor profesional" OR "monitor BNC" OR "Ikegami" OR "Panasonic broadcast" OR "Commodore 1084")',
+    ),
+    (
+        "Wallapop · CRT / videowall / procesado",
+        'site:es.wallapop.com/item/ ("Sony Trinitron" OR "TV de tubo" OR "televisor CRT" OR "Loewe CRT" OR "videowall CRT" OR "video wall controller" OR "Edirol V4" OR "Edirol V8" OR "Roland LVS-400" OR "Time Base Corrector" OR "TBC video" OR "Extron" OR "VIDEONICS")',
+    ),
+    (
+        "Wallapop · cámaras analógicas / cine",
+        'site:es.wallapop.com/item/ ("camara VHS" OR "videocamara VHS" OR "VHS-C" OR "S-VHS" OR "Video8" OR "Hi8" OR "Betacam" OR "U-matic" OR "camara ENG" OR "camara broadcast" OR "Super 8" OR "camara 8mm" OR "camara 16mm" OR "camara CCTV" OR "Sony 3CCD")',
     ),
     (
         "Vinted · CRT / vídeo",
-        'site:vinted.es/items/ ("Sony PVM" OR "Sony BVM" OR "Sony Trinitron" OR "JVC TM" OR "monitor broadcast" OR "monitor profesional video" OR "monitor BNC" OR "TV de tubo" OR "televisor CRT" OR "videowall CRT" OR "Edirol V4" OR "Edirol V8" OR "Time Base Corrector" OR "TBC video" OR "Extron" OR "Ikegami" OR "VIDEONICS")',
+        'site:vinted.es/items/ ("Sony PVM" OR "Sony BVM" OR "Sony Trinitron" OR "JVC TM" OR "monitor CRT" OR "TV de tubo" OR "televisor CRT" OR "Edirol V4" OR "Time Base Corrector" OR "TBC video" OR "Extron")',
     ),
     (
-        "Facebook Marketplace · CRT / vídeo",
-        'site:facebook.com/marketplace/item/ ("España" OR "Spain" OR "Madrid" OR "Barcelona" OR "Valencia" OR "Sevilla" OR "Zaragoza" OR "Málaga" OR "Alicante" OR "Murcia" OR "Bilbao" OR "Valladolid" OR "Vigo" OR "A Coruña" OR "Granada" OR "Córdoba" OR "Palma" OR "Tenerife" OR "Las Palmas") ("Sony PVM" OR "Sony BVM" OR "Sony Trinitron" OR "JVC TM" OR "monitor broadcast" OR "monitor profesional video" OR "monitor BNC" OR "TV de tubo" OR "televisor CRT" OR "videowall CRT" OR "video wall" OR "muro de televisores" OR "Edirol V4" OR "Edirol V8" OR "Roland LVS-400" OR "Time Base Corrector" OR "TBC video" OR "Extron" OR "Ikegami" OR "VIDEONICS")',
-    )
+        "Vinted · cámaras analógicas / cine",
+        'site:vinted.es/items/ ("camara VHS" OR "videocamara VHS" OR "VHS-C" OR "Video8" OR "Hi8" OR "Betacam" OR "Super 8" OR "camara 8mm" OR "camara 16mm" OR "camara CCTV")',
+    ),
+    (
+        "Facebook Marketplace · España",
+        'site:facebook.com/marketplace/item/ ("Sony PVM" OR "Sony BVM" OR "Sony Trinitron" OR "Edirol V4" OR "Time Base Corrector" OR "TV de tubo") ("España" OR "Madrid" OR "Barcelona" OR "Valencia")',
+    ),
 ]
 
 
@@ -87,21 +99,67 @@ def platform_for(link):
     return None
 
 
+def extract_location(item):
+    title = (item.get("title") or "").strip()
+
+    wallapop_patterns = [
+        r"\bpor\s+[\d\.,]+\s+EUR\s+en\s+(.+?)(?:\s+en\s+WALLAPOP|\s*\|\s*Wallapop|$)",
+        r"\bpor\s+[\d\.,]+\s+€\s+en\s+(.+?)(?:\s+en\s+WALLAPOP|\s*\|\s*Wallapop|$)",
+    ]
+    for pattern in wallapop_patterns:
+        match = re.search(pattern, title, re.IGNORECASE)
+        if match:
+            return match.group(1).strip(" -–,")
+
+    facebook_match = re.search(
+        r"[-–]\s*([^|]+?)\s*\|\s*Facebook Marketplace",
+        title,
+        re.IGNORECASE,
+    )
+    if facebook_match:
+        return facebook_match.group(1).strip(" -–,")
+
+    return None
+
+
 def is_facebook_spain(item):
     if item.get("platform") != "Facebook Marketplace":
         return True
 
+    location = (extract_location(item) or "").lower()
     text = f"{item.get('title', '')} {item.get('desc', '')}".lower()
+
+    foreign_terms = [
+        "colombia", "bogotá", "bogota", "méxico", "mexico", "argentina",
+        "chile", "perú", "peru", "ecuador", "venezuela", "uruguay",
+        "united states", "usa", "michigan", "california", "texas", "florida",
+        "new york", "ohio", "pennsylvania", "illinois", "georgia",
+        "portugal", "france", "italy", "germany", "united kingdom", "uk"
+    ]
+    if any(term in location for term in foreign_terms):
+        return False
 
     spain_terms = [
         "españa", "spain", "madrid", "barcelona", "valencia", "valència",
         "sevilla", "zaragoza", "málaga", "malaga", "alicante", "murcia",
-        "bilbao", "valladolid", "vigo", "a coruña", "coruña", "granada",
-        "córdoba", "cordoba", "palma", "mallorca", "tenerife", "las palmas",
-        "castellón", "castellon", "gijón", "gijon", "oviedo", "pamplona",
-        "santander", "salamanca", "toledo", "albacete", "badajoz"
+        "bilbao", "bizkaia", "valladolid", "vigo", "a coruña", "coruña",
+        "granada", "córdoba", "cordoba", "palma", "mallorca", "tenerife",
+        "las palmas", "castellón", "castellon", "gijón", "gijon", "oviedo",
+        "pamplona", "navarra", "santander", "cantabria", "salamanca",
+        "toledo", "albacete", "badajoz", "cáceres", "caceres", "huelva",
+        "cádiz", "cadiz", "jaén", "jaen", "león", "leon", "burgos",
+        "logroño", "rioja", "vitoria", "donostia", "san sebastián",
+        "girona", "tarragona", "lleida", "huesca", "teruel", "cuenca",
+        "guadalajara", "segovia", "ávila", "avila", "soria", "ourense",
+        "lugo", "pontevedra"
     ]
-    return any(term in text for term in spain_terms)
+
+    if location:
+        return any(term in location for term in spain_terms)
+
+    return any(term in text for term in spain_terms) and not any(
+        term in text for term in foreign_terms
+    )
 
 
 def extract_price_value(text):
@@ -170,13 +228,15 @@ def is_sold_or_unavailable(item):
 
 
 def is_valencia(item):
+    location = (extract_location(item) or "").lower()
     text = f"{item.get('title', '')} {item.get('desc', '')}".lower()
+    haystack = f"{location} {text}"
     terms = [
         "valencia", "valència", "torrent", "paterna", "mislata",
         "burjassot", "sagunto", "sagunt", "gandia", "gandía",
         "alzira", "xirivella", "manises", "quart de poblet"
     ]
-    return any(term in text for term in terms)
+    return any(term in haystack for term in terms)
 
 
 def is_unwanted_vhs_media(item):
@@ -286,6 +346,7 @@ if STATE.exists():
         seen = set()
 
 found = []
+search_failures = []
 for label, query in SEARCHES:
     try:
         results = brave_search(query)
@@ -306,6 +367,7 @@ for label, query in SEARCHES:
                 valid += 1
         print(f"{label}: {len(results)} resultados Brave, {valid} anuncios válidos.")
     except Exception as exc:
+        search_failures.append(label)
         print(f"Search failed [{label}]: {exc}")
 
 dedup = {}
@@ -321,7 +383,7 @@ for item in found:
             "title": item.get("title", ""),
             "platform": item.get("platform", ""),
             "price": extract_price(text_for_price),
-            "location": "Valencia / cerca" if is_valencia(item) else "España",
+            "location": extract_location(item) or ("Valencia / cerca" if is_valencia(item) else "España · ubicación no visible"),
             "link": item.get("link", ""),
         }
     )
@@ -353,7 +415,13 @@ else:
     for item in new_items:
         price = extract_price(item["title"] + " " + item["desc"])
         price_line = f" · {price}" if price else ""
-        location_line = "📍 Valencia / cerca" if is_valencia(item) else "🇪🇸 España"
+        visible_location = extract_location(item)
+        if visible_location:
+            location_line = f"📍 {visible_location}"
+        elif is_valencia(item):
+            location_line = "📍 Valencia / cerca"
+        else:
+            location_line = "🇪🇸 España · ubicación no visible"
         message = (
             f"🔴 {item['title']}\n"
             f"{item['platform']}{price_line}\n"
@@ -362,6 +430,16 @@ else:
         )
         send(message)
         print("Sent:", item["link"])
+
+if EVENT_NAME == "push":
+    failure_note = ""
+    if search_failures:
+        failure_note = f" Fuentes con error: {', '.join(search_failures)}."
+    send(
+        f"✅ CRTStalker actualizado y Telegram operativo. "
+        f"Encontrados {len(found)} anuncios válidos; nuevos en esta ejecución: {len(new_items)}."
+        f"{failure_note} Seguiré revisando automáticamente cada 4 horas."
+    )
 
 seen.update(item["link"] for item in found)
 STATE.write_text(
