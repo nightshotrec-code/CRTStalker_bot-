@@ -14,6 +14,7 @@ EVENT_NAME = os.environ.get("GITHUB_EVENT_NAME", "")
 HOME_REGION = "Valencia"
 
 STATE = Path("data/seen.json")
+LATEST = Path("data/latest.json")
 STATE.parent.mkdir(parents=True, exist_ok=True)
 
 SEARCHES = [
@@ -303,6 +304,30 @@ dedup = {}
 for item in found:
     dedup[item["link"]] = item
 found = list(dedup.values())
+
+latest_snapshot = []
+for item in found:
+    text_for_price = f"{item.get('title', '')} {item.get('desc', '')}"
+    latest_snapshot.append(
+        {
+            "title": item.get("title", ""),
+            "platform": item.get("platform", ""),
+            "price": extract_price(text_for_price),
+            "location": "Valencia / cerca" if is_valencia(item) else "España",
+            "link": item.get("link", ""),
+        }
+    )
+
+LATEST.write_text(
+    json.dumps(latest_snapshot, ensure_ascii=False, indent=2),
+    encoding="utf-8",
+)
+
+for item in latest_snapshot:
+    print(
+        f"VALID | {item['platform']} | {item['price'] or 'sin precio'} | "
+        f"{item['title']} | {item['link']}"
+    )
 
 first_run = not seen
 new_items = [item for item in found if item["link"] not in seen]
