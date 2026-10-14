@@ -77,18 +77,18 @@
     "link": "https://es.wallapop.com/item/monitor-sony-bvm-d24-918723383"
   },
   {
-    "title": "Monitor SONY Trinitron PVM-14M2E Profesional CRT de Segunda mano por 400 EUR en Madrid | Wallapop",
-    "platform": "Wallapop",
-    "price": "400 €",
-    "location": "Madrid",
-    "link": "https://es.wallapop.com/item/monitor-sony-trinitron-pvm-14m2e-profesional-crt-1102907536"
-  },
-  {
     "title": "Monitor Sony Trinitron PVM-20M2MDE de Segunda mano por 420 EUR en Málaga | Wallapop",
     "platform": "Wallapop",
     "price": "420 €",
     "location": "Málaga",
     "link": "https://es.wallapop.com/item/monitor-sony-trinitron-pvm-20m2mde-1281942070"
+  },
+  {
+    "title": "Monitor SONY Trinitron PVM-14M2E Profesional CRT de Segunda mano por 400 EUR en Madrid | Wallapop",
+    "platform": "Wallapop",
+    "price": "400 €",
+    "location": "Madrid",
+    "link": "https://es.wallapop.com/item/monitor-sony-trinitron-pvm-14m2e-profesional-crt-1102907536"
   },
   {
     "title": "Sony PVM 6041 QM de Segunda mano por 270 EUR en Salamanca | Wallapop",
@@ -259,13 +259,6 @@
     "link": "https://es.wallapop.com/item/videocamara-jvc-compact-vhs-con-cargador-1262202009"
   },
   {
-    "title": "Camara de video.Año 1978.Super 8 Hanimex de Segunda mano por 13 EUR en Calonge | Wallapop",
-    "platform": "Wallapop",
-    "price": "13 €",
-    "location": "Calonge",
-    "link": "https://es.wallapop.com/item/camara-de-video-antigua-562175521"
-  },
-  {
     "title": "Videocámara Sony Hi8 Handycam + Complementos 1992 de Segunda mano por 120 EUR en Burgos | Wallapop",
     "platform": "Wallapop",
     "price": "120 €",
@@ -278,6 +271,13 @@
     "price": "60 €",
     "location": "Roses",
     "link": "https://es.wallapop.com/item/camara-profesional-hi8-sony-evw-300p-1198191630"
+  },
+  {
+    "title": "Camara de video.Año 1978.Super 8 Hanimex de Segunda mano por 13 EUR en Calonge | Wallapop",
+    "platform": "Wallapop",
+    "price": "13 €",
+    "location": "Calonge",
+    "link": "https://es.wallapop.com/item/camara-de-video-antigua-562175521"
   },
   {
     "title": "Videocámara VHS Panasonic RX27 de Segunda mano por 25 EUR en Pinto | Wallapop",
@@ -294,18 +294,18 @@
     "link": "https://es.wallapop.com/item/sony-ccd-m8e-video8-handycam-completa-1307208261"
   },
   {
-    "title": "Cámara vídeo VHS Panasonic A1 de Segunda mano por 45 EUR en Jaén | Wallapop",
-    "platform": "Wallapop",
-    "price": "45 €",
-    "location": "Jaén",
-    "link": "https://es.wallapop.com/item/camara-video-vhs-panasonic-a1-896544762"
-  },
-  {
     "title": "Cámara de video Sony de Segunda mano por 100 EUR en Almussafes | Wallapop",
     "platform": "Wallapop",
     "price": "100 €",
     "location": "Almussafes",
     "link": "https://es.wallapop.com/item/camara-de-video-sony-1114130079"
+  },
+  {
+    "title": "Cámara vídeo VHS Panasonic A1 de Segunda mano por 45 EUR en Jaén | Wallapop",
+    "platform": "Wallapop",
+    "price": "45 €",
+    "location": "Jaén",
+    "link": "https://es.wallapop.com/item/camara-video-vhs-panasonic-a1-896544762"
   },
   {
     "title": "Cámara Samsung VP-L900 Hi8 8mm de Segunda mano por 165 EUR en Santa Coloma de Gramenet | Wallapop",
@@ -334,12 +334,5 @@
     "price": null,
     "location": "España · ubicación no visible",
     "link": "https://www.vinted.es/items/5108746743-la-cortina-del-tiempo-vhs-videoclub"
-  },
-  {
-    "title": "Colección VHS “El mundo desconocido de Jacques Cousteau” | Vinted",
-    "platform": "Vinted",
-    "price": null,
-    "location": "España · ubicación no visible",
-    "link": "https://www.vinted.es/items/1095611077-coleccion-vhs-el-mundo-desconocido-de-jacques-cousteau"
   }
 ]
