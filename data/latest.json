@@ -14,18 +14,18 @@
     "link": "https://es.wallapop.com/item/cable-rgb-para-consolas-retro-pvm-y-bvm-1074157590"
   },
   {
-    "title": "Monitor Sony Trimaster EL 16’5” OLED de Segunda mano por 5.500 EUR en Santiago de Compostela | Wallapop",
-    "platform": "Wallapop",
-    "price": "5500 €",
-    "location": "Santiago de Compostela",
-    "link": "https://es.wallapop.com/item/monitor-grado-1-sony-trimaster-el-165-1050933856"
-  },
-  {
     "title": "Monitor sony trinitron tipo PVM de Segunda mano por 330 EUR en Madrid | Wallapop",
     "platform": "Wallapop",
     "price": "330 €",
     "location": "Madrid",
     "link": "https://es.wallapop.com/item/monitor-sony-trinitron-tipo-pvm-1003572524"
+  },
+  {
+    "title": "Monitor Sony Trimaster EL 16’5” OLED de Segunda mano por 5.500 EUR en Santiago de Compostela | Wallapop",
+    "platform": "Wallapop",
+    "price": "5500 €",
+    "location": "Santiago de Compostela",
+    "link": "https://es.wallapop.com/item/monitor-grado-1-sony-trimaster-el-165-1050933856"
   },
   {
     "title": "Monitor Sony Trinitron PVM-20 para retro gamin de Segunda mano por 250 EUR en Madrid | Wallapop",
@@ -77,13 +77,6 @@
     "link": "https://es.wallapop.com/item/sony-pvm-2950qm-monitor-crt-1125886826"
   },
   {
-    "title": "Monitor SONY Trinitron PVM-2010 de Segunda mano por 295 EUR en Tarragona | Wallapop",
-    "platform": "Wallapop",
-    "price": "295 €",
-    "location": "Tarragona",
-    "link": "https://es.wallapop.com/item/monitor-sony-trinitron-pvm-2010-1136275352"
-  },
-  {
     "title": "Monitor SONY PVM-14L1 - Gris de Segunda mano por 200 EUR en Badalona | Wallapop",
     "platform": "Wallapop",
     "price": "200 €",
@@ -91,11 +84,25 @@
     "link": "https://es.wallapop.com/item/monitor-sony-pvm-14l1-gris-1158685792"
   },
   {
+    "title": "Monitor SONY Trinitron PVM-2010 de Segunda mano por 295 EUR en Tarragona | Wallapop",
+    "platform": "Wallapop",
+    "price": "295 €",
+    "location": "Tarragona",
+    "link": "https://es.wallapop.com/item/monitor-sony-trinitron-pvm-2010-1136275352"
+  },
+  {
     "title": "Monitor Sony Trinitron PVM-9040M de Segunda mano por 185 EUR en Hernansancho | Wallapop",
     "platform": "Wallapop",
     "price": "185 €",
     "location": "Hernansancho",
     "link": "https://es.wallapop.com/item/monitor-sony-trinitron-pvm-9040m-1159073565"
+  },
+  {
+    "title": "Monitor Retro Barco ADVM20 de Segunda mano por 1.280 EUR en Alicante/Alacant | Wallapop",
+    "platform": "Wallapop",
+    "price": "1280 €",
+    "location": "Alicante/Alacant",
+    "link": "https://es.wallapop.com/item/monitor-retro-barco-advm20-1307858510"
   },
   {
     "title": "Monitor SONY Trinitron PVM-14M2E Profesional CRT de Segunda mano por 400 EUR en Madrid | Wallapop",
@@ -224,18 +231,18 @@
     "link": "https://es.wallapop.com/item/televisor-sony-trinitron-sony-wega-kv-32fq85e-787525411"
   },
   {
-    "title": "SONY KV-21T1E SUPER TRINITRON de Segunda mano por 15 EUR en El Arenal | Wallapop",
-    "platform": "Wallapop",
-    "price": "15 €",
-    "location": "El Arenal",
-    "link": "https://es.wallapop.com/item/sony-kv-21t1e-super-trinitron-1025182977"
-  },
-  {
     "title": "Sony Trinitron KV25FZ30E CRT TV de Segunda mano por 20 EUR en Valencia | Wallapop",
     "platform": "Wallapop",
     "price": "20 €",
     "location": "Valencia",
     "link": "https://es.wallapop.com/item/sony-trinitron-kv25fz30e-crt-tv-1191721059"
+  },
+  {
+    "title": "SONY KV-21T1E SUPER TRINITRON de Segunda mano por 15 EUR en El Arenal | Wallapop",
+    "platform": "Wallapop",
+    "price": "15 €",
+    "location": "El Arenal",
+    "link": "https://es.wallapop.com/item/sony-kv-21t1e-super-trinitron-1025182977"
   },
   {
     "title": "TV Sony Trinitron Wega 29\" KV-29SE10E de Segunda mano por 40 EUR en Alicante/Alacant | Wallapop",
