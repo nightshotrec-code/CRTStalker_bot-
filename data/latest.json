@@ -189,13 +189,6 @@
     "link": "https://es.wallapop.com/item/sony-kv-21t1e-super-trinitron-1025182977"
   },
   {
-    "title": "Sony Trinitron KV25FZ30E TV CRT de Segunda mano por 19,99 EUR en Valencia | Wallapop",
-    "platform": "Wallapop",
-    "price": "19,99 €",
-    "location": "Valencia",
-    "link": "https://es.wallapop.com/item/sony-trinitron-kv25fz30e-tv-crt-1196524723"
-  },
-  {
     "title": "Sony Trinitron KV25FZ30E CRT TV de Segunda mano por 20 EUR en Valencia | Wallapop",
     "platform": "Wallapop",
     "price": "20 €",
@@ -224,18 +217,18 @@
     "link": "https://es.wallapop.com/item/tv-monitor-sony-trinitron-crt-14-kv-14lt1e-1226733845"
   },
   {
-    "title": "TV Sony 32\" Trinitron CRT + mueble de Segunda mano por 120 EUR en Estepona | Wallapop",
-    "platform": "Wallapop",
-    "price": "120 €",
-    "location": "Estepona",
-    "link": "https://es.wallapop.com/item/tv-sony-trinitron-crt---mueble-903360830"
-  },
-  {
     "title": "Televisor Sony Trinitron KV-14M1E de Segunda mano por 90 EUR en Ali | Wallapop",
     "platform": "Wallapop",
     "price": "90 €",
     "location": "Ali",
     "link": "https://es.wallapop.com/item/televisor-sony-trinitron-kv-14m1e-1299409213"
+  },
+  {
+    "title": "TV Sony 32\" Trinitron CRT + mueble de Segunda mano por 120 EUR en Estepona | Wallapop",
+    "platform": "Wallapop",
+    "price": "120 €",
+    "location": "Estepona",
+    "link": "https://es.wallapop.com/item/tv-sony-trinitron-crt---mueble-903360830"
   },
   {
     "title": "Sony trinitron (MODELO COLECCIÓN MUY RARO) de Segunda mano por 345 EUR en Madrid | Wallapop",
@@ -257,6 +250,13 @@
     "price": "150 €",
     "location": "Madrid",
     "link": "https://es.wallapop.com/item/televisor-sony-trinitron-32-pulgadas-920589782"
+  },
+  {
+    "title": "TV Sony Trinitron 14 MSX de Segunda mano por 250 EUR en Esplugues de Llobregat | Wallapop",
+    "platform": "Wallapop",
+    "price": "250 €",
+    "location": "Esplugues de Llobregat",
+    "link": "https://es.wallapop.com/item/tv-sony-trinitron-14-msx-1188697585"
   },
   {
     "title": "Digitalización Escaneado de Super8 profesional en Cerdanyola del Vallès en WALLAPOP",
@@ -336,13 +336,6 @@
     "link": "https://es.wallapop.com/item/camara-sony-handycam-pro-video-8-1293423935"
   },
   {
-    "title": "Cámara de video Sony de Segunda mano por 100 EUR en Almussafes | Wallapop",
-    "platform": "Wallapop",
-    "price": "100 €",
-    "location": "Almussafes",
-    "link": "https://es.wallapop.com/item/camara-de-video-sony-1114130079"
-  },
-  {
     "title": "Pasar vhs a dvd en Alicante/Alacant en WALLAPOP",
     "platform": "Wallapop",
     "price": null,
@@ -350,11 +343,25 @@
     "link": "https://es.wallapop.com/item/pasar-cintas-a-dvd-85395040"
   },
   {
+    "title": "Cámara de video Sony de Segunda mano por 100 EUR en Almussafes | Wallapop",
+    "platform": "Wallapop",
+    "price": "100 €",
+    "location": "Almussafes",
+    "link": "https://es.wallapop.com/item/camara-de-video-sony-1114130079"
+  },
+  {
     "title": "Camera Kohka super 8 | Vinted",
     "platform": "Vinted",
     "price": null,
     "location": "España · ubicación no visible",
     "link": "https://www.vinted.es/items/8456381380-camera-kohka-super-8"
+  },
+  {
+    "title": "Vhs - Sabrina y sus amores - Harrison Ford, Julia Ormond - 1997. | Vinted",
+    "platform": "Vinted",
+    "price": null,
+    "location": "España · ubicación no visible",
+    "link": "https://www.vinted.es/items/4617657465-vhs-sabrina-y-sus-amores-harrison-ford-julia-ormond-1997"
   },
   {
     "title": "Vans Ski hi8 terciopelo granate | Vinted",
